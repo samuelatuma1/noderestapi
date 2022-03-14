@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        form{
+            border: 1px solid grey;
+            border-radius: 20px;
+            padding: 10px;
+            margin: 10px;
+        }
+        textarea{
+            min-height: 150px;
+            min-width: 300px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>All Products</h1>
+
+    <main class="allProds">
+
+    </main>
+
+    <script>
+        const allProds =  document.querySelector(".allProds")
+        
+        const fetchData = async (link) => {
+            try{
+                let allData = await fetch(link, {
+                    "method" : "GET",
+                    "headers" : {
+                        "Content-Type" : "application/json"
+                    }
+            })
+            if(allData.ok){
+                const allProducts = await allData.json()
+                console.log(allProducts)
+
+                populateData(allProducts)
+            }
+            else{
+                throw ('An unknown error occured')
+            }
+            
+            }
+            catch(err){
+                console.log(err)
+            }
+        }
+
+        function submitProdForm(e) {
+            e.preventDefault()
+            const form = e.target
+            console.log(form)
+        }
+
+        function populateData(allProducts){
+            for (let prod of allProducts){
+                const prodForm = document.createElement("form")
+                prodForm.innerHTML = `
+                    <p>
+                        Product Name : <input id='${prod.name}' value='${prod.name}'>
+                    </p>
+                    <p>
+                        Product Description : <textarea id='${prod.desc}' value='${prod.desc}'>${prod.desc}</textarea>
+                    </p>
+                    <button>Update Product</button>
+                `
+                prodForm.addEventListener("submit", submitProdForm)
+                allProds.append(prodForm)
+            }
+        }
+
+        fetchData('/products')
+    </script>
+</body>
+</html>
